@@ -28,4 +28,4 @@ jobs:
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
         uses: burrunan/gradle-cache-action@v1
         with:
-          arguments: publish
+          arguments: publishPlugins
