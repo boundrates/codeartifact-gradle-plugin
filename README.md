@@ -10,7 +10,7 @@ A settings plugin that configures AWS CodeArtifact repository.
 Usage (in `settings.gradle`):
 ```
 plugins {
-    id("co.bound.codeartifact").version("1.0.0")
+    id("co.bound.codeartifact").version("1.0.1")
 }
 codeartifact {
     domain = "repo-domain"
@@ -32,7 +32,7 @@ A project plugin that configures AWS CodeArtifact repository for publishing arti
 Usage (in `build.gradle`):
 ```
 plugins {
-    id("co.bound.codeartifact-publish").version("1.0.0")
+    id("co.bound.codeartifact-publish").version("1.0.1")
 }
 ```
 
