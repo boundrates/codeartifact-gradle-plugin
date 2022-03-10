@@ -1,0 +1,21 @@
+def codeartifact = extensions.create("codeartifact", co.bound.codeartifact.CodeArtifactPluginExtension)
+def serviceProvider = gradle.sharedServices.registerIfAbsent("codeartifactRepoProvider", co.bound.codeartifact.CodeArtifactRepoProvider) {
+    it.getParameters().getDomain().set(codeartifact.domain)
+    it.getParameters().getAccountId().set(codeartifact.accountId)
+    it.getParameters().getRegion().set(codeartifact.region)
+    it.getParameters().getRepo().set(codeartifact.repo)
+}
+
+gradle.settingsEvaluated {
+    settings.pluginManagement {
+        repositories {
+            maven(serviceProvider.get()::configureRepo)
+        }
+    }
+    dependencyResolutionManagement {
+        repositories {
+            maven(serviceProvider.get()::configureRepo)
+        }
+    }
+}
+
