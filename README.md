@@ -10,7 +10,7 @@ A settings plugin that configures AWS CodeArtifact repository.
 Usage (in `settings.gradle`):
 ```
 plugins {
-    id("co.bound.codeartifact").version("1.0.0")
+    id("co.bound.codeartifact").version("1.0.1")
 }
 codeartifact {
     domain = "repo-domain"
@@ -32,10 +32,15 @@ A project plugin that configures AWS CodeArtifact repository for publishing arti
 Usage (in `build.gradle`):
 ```
 plugins {
-    id("co.bound.codeartifact-publish").version("1.0.0")
+    id("co.bound.codeartifact-publish").version("1.0.1")
 }
 ```
 
 This plugin requires `co.bound.codeartifact` plugin to also be applied in the `settings.gradle` and a CodeArtifact
 repository to be configured. It will apply the `maven-publish` plugin and add the configured CodeArtifact repository
 as a publishing repository.
+
+
+# License
+
+The project is [licensed](LICENSE) under Apache License 2.0.

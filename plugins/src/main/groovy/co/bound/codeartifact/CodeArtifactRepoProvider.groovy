@@ -46,7 +46,7 @@ abstract class CodeArtifactRepoProvider implements BuildService<Params> {
     private void configureCodeArtifactUrl(MavenArtifactRepository spec, String domain, String accountId, String region, String repo) {
         def overridenCodeArtifactUrl = getOverriddenCodeArtifactUrl()
         spec.setAllowInsecureProtocol(overridenCodeArtifactUrl != null)
-        def urlPrefix = overridenCodeArtifactUrl == null ? "http:/" : overridenCodeArtifactUrl
+        def urlPrefix = overridenCodeArtifactUrl == null ? "https:/" : overridenCodeArtifactUrl
         spec.url(URI.create("${urlPrefix}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/${repo}/"))
     }
 
