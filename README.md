@@ -3,18 +3,19 @@
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/co/bound/plugins/maven-metadata.xml.svg?colorB=007ec6&label=Plugin%20Portal)](https://plugins.gradle.org/plugin/co.bound.codeartifact)
 
 A set of plugins for authenticating with and using [AWS CodeArtifact](https://aws.amazon.com/codeartifact/) repository as a source for project plugins
-and dependencies as well as target for publishing artifacts to.
+and dependencies as well as a target for publishing artifacts to.
 
 ## Why another CodeArtifact plugin?
 
 The existing solutions for Gradle with CodeArtifact cater for the most common use cases - consuming and publishing
 project dependencies from/to CodeArtifact repository.
 
-Another use case exists though - organizations that work with multiple projects scattered in multiple repositories may want
+Another use case exists though - organizations that work with multiple projects spread across many repositories may want
 to [encapsulate aspects of common project conventions and build logic using Gradle plugins](https://docs.gradle.org/current/samples/sample_publishing_convention_plugins.html).
-Those plugins are published to a repository like any other libraries, however, to consume them, 
-Gradle needs to discover them from a plugin repository. Gradle configures the plugin repositories early in its lifecycle,
-before it starts to configure any of the projects (thus the need to configure CodeArtifact as source of other plugins in a `settings` plugin).
+Those plugins are published to a repository like any other library.
+However, to consume them, Gradle needs to discover them from a plugin repository. 
+Gradle configures the plugin repositories early in its lifecycle, before it starts to configure any of the projects.
+Thus, the need to configure CodeArtifact as source of other plugins in a `settings` plugin.
 
 This plugin solves this latter use case - consuming Gradle plugins that are published to CodeArtifact.
 In other words, with this plugin you can publish a Gradle plugin to a CodeArtifact repository, and you can apply that
