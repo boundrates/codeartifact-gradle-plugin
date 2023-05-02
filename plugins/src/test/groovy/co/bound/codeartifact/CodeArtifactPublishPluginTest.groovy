@@ -1,4 +1,4 @@
-package co.bound
+package co.bound.codeartifact
 
 import org.gradle.testkit.runner.TaskOutcome
 

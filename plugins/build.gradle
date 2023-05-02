@@ -1,11 +1,11 @@
 plugins {
     id("groovy-gradle-plugin")
     id("maven-publish")
-    id("com.gradle.plugin-publish").version("1.1.0")
+    id("com.gradle.plugin-publish").version("1.2.0")
 }
 
 group = "co.bound"
-version = "1.0.2"
+version = "1.1.0"
 
 tasks.named("publish") {
     dependsOn("check")
@@ -17,7 +17,7 @@ tasks.named("test") {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.20.52"))
+    implementation(platform("software.amazon.awssdk:bom:2.20.56"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
 

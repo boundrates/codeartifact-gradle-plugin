@@ -1,4 +1,4 @@
-package co.bound
+package co.bound.codeartifact
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
