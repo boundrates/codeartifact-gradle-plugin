@@ -17,7 +17,9 @@ tasks.named("test") {
 }
 
 dependencies {
-    implementation("software.amazon.awssdk:codeartifact:2.20.14")
+    implementation(platform("software.amazon.awssdk:bom:2.20.52"))
+    implementation("software.amazon.awssdk:codeartifact")
+    implementation("software.amazon.awssdk:sso")
 
     testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-3.0"))
     testImplementation("org.spockframework:spock-core")
