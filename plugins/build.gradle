@@ -5,15 +5,18 @@ plugins {
 }
 
 group = "co.bound"
-version = "1.1.0"
+version = "1.2.0"
 
 tasks.named("publish") {
     dependsOn("check")
 }
 
-tasks.named("test") {
+tasks.named("test", Test) {
     useJUnitPlatform()
     testLogging.exceptionFormat = 'full'
+    def tmpDir = file("$buildDir/tmp/test/work")
+    tmpDir.mkdirs()
+    systemProperty 'java.io.tmpdir', tmpDir
 }
 
 dependencies {
@@ -29,16 +32,20 @@ dependencies {
 gradlePlugin {
     website = "https://github.com/boundrates/codeartifact-gradle-plugin"
     vcsUrl = "https://github.com/boundrates/codeartifact-gradle-plugin"
-    afterEvaluate {
-        plugins {
-            def codeartifactPlugin = it.findByName("co.bound.codeartifact")
-            codeartifactPlugin.displayName = "A settings plugin that configures AWS CodeArtifact repository"
-            codeartifactPlugin.description = "Configures AWS CodeArtifact Maven repository as source for project plugins and project dependencies."
-            codeartifactPlugin.tags.set(["aws", "codeartifact"])
-            def codeartifactPublishPlugin = it.findByName("co.bound.codeartifact-publish")
-            codeartifactPublishPlugin.displayName = "A project plugin for publishing artifacts to AWS CodeArtifact repository"
-            codeartifactPublishPlugin.description = "Configures AWS CodeArtifact Maven repository for artifact publishing. Requires co.bound.codeartifact settings plugin to be applied and configured."
-            codeartifactPublishPlugin.tags.set(["aws", "codeartifact", "publishing"])
-        }
-    }
+    plugins {
+      create("co.bound.codeartifact") {
+        id = "co.bound.codeartifact"
+        implementationClass = "co.bound.codeartifact.SettingsPlugin"
+        displayName = "A settings plugin that configures AWS CodeArtifact repository"
+        description = "Configures AWS CodeArtifact Maven repository as source for project plugins and project dependencies."
+        tags.set(["aws", "codeartifact"])
+      }
+      create("co.bound.codeartifact-publish") {
+        id = "co.bound.codeartifact-publish"
+        implementationClass = "co.bound.codeartifact.PublishPlugin"
+        displayName = "A project plugin for publishing artifacts to AWS CodeArtifact repository"
+        description = "Configures AWS CodeArtifact Maven repository for artifact publishing. Requires co.bound.codeartifact settings plugin to be applied and configured."
+        tags.set(["aws", "codeartifact", "publishing"])
+      }
+   }
 }
