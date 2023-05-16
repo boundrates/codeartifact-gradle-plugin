@@ -1,7 +1,9 @@
 package co.bound.codeartifact
 
+
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import static com.github.tomakehurst.wiremock.http.RequestMethod.POST
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.allRequests
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern
 
 class CodeArtifactPluginTest extends PluginTest {
@@ -46,6 +48,26 @@ class CodeArtifactPluginTest extends PluginTest {
         result.output.contains("Searched in the following repositories:")
         result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
         wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+    }
+
+    def "does not fetch the token for offline mode"() {
+        given:
+        givenCodeArtifactWillReturnAuthToken()
+        givenCodeArtifactPluginIsConfigured()
+        buildFile << """
+            plugins {
+                id("foo.bar").version("42")
+            }
+        """
+
+        when:
+        def result = runTaskWithFailure("tasks", "--offline")
+
+        then:
+        result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
+        result.output.contains("Searched in the following repositories:")
+        result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
+        wiremock.verify(0, allRequests())
     }
 
     def "searches for dependencies in configured CodeArtifact repository"() {

@@ -22,6 +22,7 @@ abstract class CodeArtifactRepoProvider implements BuildService<Params> {
         Property<String> getRegion()
         Property<String> getRepo()
         Property<File> getGradleUserHome()
+        Property<Boolean> getOffline()
     }
 
     void configureRepo(MavenArtifactRepository spec) {
@@ -33,9 +34,11 @@ abstract class CodeArtifactRepoProvider implements BuildService<Params> {
 
         spec.name = "codeartifact"
         configureCodeArtifactUrl(spec, domain, accountId, region, repo)
-        spec.credentials {
-            username = "aws"
-            password = getToken(domain, accountId, region, params.gradleUserHome.get())
+        spec.credentials { pwd ->
+            pwd.username = "aws"
+            if (!params.offline.get()) {
+                pwd.password = getToken(domain, accountId, region, params.gradleUserHome.get())
+            }
         }
     }
 

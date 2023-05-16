@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.spockframework.util.Assert
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -92,9 +91,9 @@ abstract class PluginTest extends Specification {
         return result
     }
 
-    BuildResult runTaskWithFailure(String task) {
+    BuildResult runTaskWithFailure(String... tasks) {
         def result = gradleRunner
-                .withArguments(task, '--stacktrace')
+                .withArguments((tasks + ['--stacktrace']) as List<String>)
                 .buildAndFail()
         println(result.output)
         return result

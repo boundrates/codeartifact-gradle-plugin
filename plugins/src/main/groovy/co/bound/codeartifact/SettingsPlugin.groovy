@@ -29,6 +29,7 @@ class SettingsPlugin implements Plugin<Settings> {
         region.set(codeartifact.region)
         repo.set(codeartifact.repo)
         gradleUserHome.set(settings.startParameter.gradleUserHomeDir)
+        offline.set(settings.startParameter.offline)
       }
     }
 
