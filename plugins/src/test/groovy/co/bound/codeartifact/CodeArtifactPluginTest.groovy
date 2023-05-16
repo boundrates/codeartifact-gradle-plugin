@@ -1,5 +1,9 @@
 package co.bound.codeartifact
 
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
+import static com.github.tomakehurst.wiremock.http.RequestMethod.POST
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern
+
 class CodeArtifactPluginTest extends PluginTest {
 
     def "not configuring the codeartifact repository emits a helpful error message"() {
@@ -41,6 +45,7 @@ class CodeArtifactPluginTest extends PluginTest {
         result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
         result.output.contains("Searched in the following repositories:")
         result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
+        wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
     }
 
     def "searches for dependencies in configured CodeArtifact repository"() {
@@ -58,11 +63,17 @@ class CodeArtifactPluginTest extends PluginTest {
         file("src/main/java/Foo.java") << "class Foo {}"
 
         when:
-        def result = runTaskWithFailure("build")
+        def result1 = runTaskWithFailure("build")
+        def result2 = runTaskWithFailure("build")
 
         then:
-        result.output.contains("Could not find foo:bar:42")
-        result.output.contains("Searched in the following locations")
-        result.output.contains("- ${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/foo/bar/42/bar-42.pom")
+        result1.output.contains("Could not find foo:bar:42")
+        result1.output.contains("Searched in the following locations")
+        result1.output.contains("- ${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/foo/bar/42/bar-42.pom")
+        result2.output.contains("Could not find foo:bar:42")
+        result2.output.contains("Searched in the following locations")
+        result2.output.contains("- ${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/foo/bar/42/bar-42.pom")
+        // credentials are cached
+        wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
     }
 }
