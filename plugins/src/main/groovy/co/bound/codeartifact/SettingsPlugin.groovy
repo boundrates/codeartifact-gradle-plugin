@@ -13,9 +13,9 @@ class SettingsPlugin implements Plugin<Settings> {
   private final BuildServiceRegistry sharedServices
 
   @Inject
-  SettingsPlugin(Gradle gradle, BuildServiceRegistry sharedServices) {
+  SettingsPlugin(Gradle gradle) {
     this.gradle = gradle
-    this.sharedServices = sharedServices
+    this.sharedServices = gradle.sharedServices
 
   }
 
