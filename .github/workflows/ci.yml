@@ -1,5 +1,4 @@
-name: plugin-continuous-delivery
-concurrency: plugin-pipeline
+name: pr-build
 
 on:
   pull_request:
