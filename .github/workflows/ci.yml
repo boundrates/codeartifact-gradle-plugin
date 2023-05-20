@@ -2,10 +2,7 @@ name: plugin-continuous-delivery
 concurrency: plugin-pipeline
 
 on:
-  push:
-    branches-ignore: [ "master" ]
   pull_request:
-    branches-ignore: [ "master" ]
 
 jobs:
   build:
