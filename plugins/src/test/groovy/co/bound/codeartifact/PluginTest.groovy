@@ -42,14 +42,18 @@ abstract class PluginTest extends Specification {
         """
         buildFile = file('build.gradle')
         wiremock.start()
+        def gradleUserHome = new File(System.getProperty("java.io.tmpdir"), "gradle-user-home")
         gradleRunner = GradleRunner.create()
                 .withProjectDir(testProjectDir)
+                .withTestKitDir(gradleUserHome)
                 .withPluginClasspath()
                 .withEnvironment(Map.of(
                         "CODEARTIFACT_URL_OVERRIDE", wiremock.baseUrl(),
                         "AWS_ACCESS_KEY_ID", UUID.randomUUID().toString(),
                         "AWS_SECRET_ACCESS_KEY", UUID.randomUUID().toString()
                 ))
+
+        assert new File(gradleUserHome, "caches/codeartifact").deleteDir()
     }
 
     def cleanup() {
@@ -60,7 +64,7 @@ abstract class PluginTest extends Specification {
     void givenCodeArtifactWillReturnAuthToken() {
         wiremock.stubFor(
                 WireMock.post(WireMock.urlMatching("/v1/authorization-token.*"))
-                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+10}}""", 200))
+                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+30}}""", 200))
         )
     }
 
@@ -87,9 +91,9 @@ abstract class PluginTest extends Specification {
         return result
     }
 
-    BuildResult runTaskWithFailure(String task) {
+    BuildResult runTaskWithFailure(String... tasks) {
         def result = gradleRunner
-                .withArguments(task, '--stacktrace')
+                .withArguments((tasks + ['--stacktrace']) as List<String>)
                 .buildAndFail()
         println(result.output)
         return result
