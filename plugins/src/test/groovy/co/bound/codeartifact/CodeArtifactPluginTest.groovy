@@ -1,5 +1,6 @@
 package co.bound.codeartifact
 
+import org.gradle.util.GradleVersion
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import static com.github.tomakehurst.wiremock.http.RequestMethod.POST
@@ -16,7 +17,7 @@ class CodeArtifactPluginTest extends PluginTest {
             $configuration
             ${settingsFile.text}
         """)
-        def result = runTaskWithFailure("tasks")
+        def result = runTaskWithFailure(GradleVersion.current().getVersion(), "tasks")
 
         expect:
         result.output.contains("Please configure the AWS CodeArtifactRepository using the codeartifact block in the settings file:")
@@ -41,13 +42,16 @@ class CodeArtifactPluginTest extends PluginTest {
         """
 
         when:
-        def result = runTaskWithFailure("tasks")
+        def result = runTaskWithFailure(gradleVersion, "tasks")
 
         then:
         result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
         result.output.contains("Searched in the following repositories:")
         result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
         wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+
+        where:
+        gradleVersion << gradleVersions()
     }
 
     def "does not fetch the token for offline mode"() {
@@ -61,13 +65,16 @@ class CodeArtifactPluginTest extends PluginTest {
         """
 
         when:
-        def result = runTaskWithFailure("tasks", "--offline")
+        def result = runTaskWithFailure(gradleVersion, "tasks", "--offline")
 
         then:
         result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
         result.output.contains("Searched in the following repositories:")
         result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
         wiremock.verify(0, allRequests())
+
+        where:
+        gradleVersion << gradleVersions()
     }
 
     def "searches for dependencies in configured CodeArtifact repository"() {
@@ -85,8 +92,8 @@ class CodeArtifactPluginTest extends PluginTest {
         file("src/main/java/Foo.java") << "class Foo {}"
 
         when:
-        def result1 = runTaskWithFailure("build")
-        def result2 = runTaskWithFailure("build")
+        def result1 = runTaskWithFailure(gradleVersion, "build")
+        def result2 = runTaskWithFailure(gradleVersion, "build")
 
         then:
         result1.output.contains("Could not find foo:bar:42")
@@ -97,5 +104,8 @@ class CodeArtifactPluginTest extends PluginTest {
         result2.output.contains("- ${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/foo/bar/42/bar-42.pom")
         // credentials are cached
         wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+
+        where:
+        gradleVersion << gradleVersions()
     }
 }

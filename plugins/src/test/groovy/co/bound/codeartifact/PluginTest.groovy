@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.util.GradleVersion
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -83,6 +84,10 @@ abstract class PluginTest extends Specification {
         """)
     }
 
+    String[] gradleVersions() {
+        return ["7.6.1", "8.0.2", GradleVersion.current().getVersion()]
+    }
+
     BuildResult runTask(String task) {
         def result = gradleRunner
                 .withArguments(task, '--stacktrace')
@@ -91,8 +96,9 @@ abstract class PluginTest extends Specification {
         return result
     }
 
-    BuildResult runTaskWithFailure(String... tasks) {
+    BuildResult runTaskWithFailure(Object gradleVersion, String... tasks) {
         def result = gradleRunner
+                .withGradleVersion(gradleVersion as String)
                 .withArguments((tasks + ['--stacktrace']) as List<String>)
                 .buildAndFail()
         println(result.output)

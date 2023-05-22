@@ -25,11 +25,14 @@ class CodeArtifactPublishPluginTest extends PluginTest {
         file("src/main/java/Foo.java") << "class Foo {}"
 
         when:
-        def result = runTaskWithFailure("publish")
+        def result = runTaskWithFailure(gradleVersion, "publish")
 
         then:
         result.output.contains("Failed to apply plugin 'co.bound.codeartifact-publish'")
         result.output.contains("Please apply the co.bound.codeartifact plugin in the settings file first and configure the codeartifact extension")
+
+        where:
+        gradleVersion << gradleVersions()
     }
 
     def "attempts to publish to CodeArtifact repository"() {
@@ -55,11 +58,14 @@ class CodeArtifactPublishPluginTest extends PluginTest {
         file("src/main/java/Foo.java") << "class Foo {}"
 
         when:
-        def result = runTaskWithFailure("publish")
+        def result = runTaskWithFailure(gradleVersion, "publish")
 
         then:
         result.task(":publishMavenPublicationToCodeartifactRepository").outcome == TaskOutcome.FAILED
         result.output.contains("Failed to publish publication 'maven' to repository 'codeartifact'")
         result.output.contains("Could not PUT '${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/com/foo/bar/0.1/bar-0.1.jar'")
+
+        where:
+        gradleVersion << gradleVersions()
     }
 }
