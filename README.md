@@ -26,9 +26,9 @@ published plugin in a Gradle build.
 A settings plugin that configures AWS CodeArtifact repository.
 
 Usage (in `settings.gradle`):
-```
+```groovy
 plugins {
-    id("co.bound.codeartifact").version("1.0.1")
+    id("co.bound.codeartifact").version("1.4.0")
 }
 codeartifact {
     domain = "repo-domain"
@@ -37,11 +37,23 @@ codeartifact {
     repo = "repo-name"
 }
 ```
+or `settings.gradle.kts`
+```kotlin
+plugins {
+    id("co.bound.codeartifact").version("1.4.0")
+}
+codeartifact {
+    domain.set("repo-domain")
+    accountId.set("123456789012")
+    region.set("us-east-1")
+    repo.set("repo-name")
+}
+```
 
 This will add the given repository as a source for Gradle project plugins (settings plugins are not supported) as
 well as a source for project dependencies.
 
-AWS credentials from the `default` profile will be used for authenticating with and obtaining the token from AWS CodeArtifact.
+AWS credentials from the `default` (configurable with environment variable `AWS_PROFILE`) profile will be used for authenticating with and obtaining the token from AWS CodeArtifact.
 
 ## co.bound.codeartifact-publish
 
