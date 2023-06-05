@@ -54,6 +54,46 @@ class CodeArtifactPluginTest extends PluginTest {
         gradleVersion << gradleVersions()
     }
 
+    def "searches for plugins in configured CodeArtifact repository for kotlin"() {
+        given:
+        givenCodeArtifactWillReturnAuthToken()
+        def settingsKt = file('settings.gradle.kts')
+        settingsFile.renameTo(settingsKt)
+        settingsFile = settingsKt
+        settingsFile.setText("""
+            plugins {
+                id("co.bound.codeartifact")
+            }
+            codeartifact{
+                domain.set("$domain")
+                accountId.set("$accountId")
+                region.set("$region")
+                repo.set("$repo")
+            }
+            ${settingsFile.text}
+        """)
+        def buildKt = file('build.gradle.kts')
+        buildFile.renameTo(buildKt)
+        buildFile = buildKt
+        buildFile << """
+            plugins {
+                id("foo.bar").version("42")
+            }
+        """
+
+        when:
+        def result = runTaskWithFailure(gradleVersion, "tasks")
+
+        then:
+        result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
+        result.output.contains("Searched in the following repositories:")
+        result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
+        wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+
+        where:
+        gradleVersion << gradleVersions()
+    }
+
     def "does not fetch the token for offline mode"() {
         given:
         givenCodeArtifactWillReturnAuthToken()
