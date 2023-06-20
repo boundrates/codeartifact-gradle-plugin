@@ -88,9 +88,10 @@ abstract class PluginTest extends Specification {
         return ["7.6.1", "8.0.2", GradleVersion.current().getVersion()]
     }
 
-    BuildResult runTask(String task) {
+    BuildResult runTask(Object gradleVersion, String... tasks) {
         def result = gradleRunner
-                .withArguments(task, '--stacktrace')
+                .withGradleVersion(gradleVersion as String)
+                .withArguments((tasks + ['--stacktrace']) as List<String>)
                 .build()
         println(result.output)
         return result

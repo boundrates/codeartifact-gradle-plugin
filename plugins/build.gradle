@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "co.bound"
-version = "1.4.0"
+version = "1.4.1"
 
 tasks.named("publish") {
     dependsOn("check")

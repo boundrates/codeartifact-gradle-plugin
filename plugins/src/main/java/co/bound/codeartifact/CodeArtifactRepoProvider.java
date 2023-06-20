@@ -1,7 +1,9 @@
 package co.bound.codeartifact;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.gradle.api.Action;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
@@ -16,6 +18,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Properties;
 
 public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtifactRepoProvider.Params> {
@@ -39,6 +42,8 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
                 }
             }
         });
+        Optional.ofNullable(params.getMavenContent().getOrNull())
+                .ifPresent(spec::mavenContent);
     }
 
     private GetAuthorizationTokenResponse token = null;
@@ -139,5 +144,7 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
         Property<File> getGradleUserHome();
 
         Property<Boolean> getOffline();
+
+        Property<Action<MavenRepositoryContentDescriptor>> getMavenContent();
     }
 }
