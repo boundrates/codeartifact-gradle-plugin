@@ -64,9 +64,7 @@ class CodeArtifactPluginTest extends PluginTest {
     def "searches for plugins in configured CodeArtifact repository for kotlin"() {
         given:
         givenCodeArtifactWillReturnAuthToken()
-        def settingsKt = file('settings.gradle.kts')
-        settingsFile.renameTo(settingsKt)
-        settingsFile = settingsKt
+        useKotlinBuildScript()
         settingsFile.setText("""
             plugins {
                 id("co.bound.codeartifact")
@@ -79,9 +77,6 @@ class CodeArtifactPluginTest extends PluginTest {
             }
             ${settingsFile.text}
         """)
-        def buildKt = file('build.gradle.kts')
-        buildFile.renameTo(buildKt)
-        buildFile = buildKt
         buildFile << """
             plugins {
                 id("foo.bar").version("42")
@@ -106,9 +101,7 @@ class CodeArtifactPluginTest extends PluginTest {
         given:
         givenCodeArtifactWillReturnAuthToken()
         file("gradle.properties") << "systemProp.org.gradle.unsafe.kotlin.assignment=true"
-        def settingsKt = file('settings.gradle.kts')
-        settingsFile.renameTo(settingsKt)
-        settingsFile = settingsKt
+        useKotlinBuildScript()
         settingsFile.setText("""
             plugins {
                 id("co.bound.codeartifact")
@@ -118,15 +111,12 @@ class CodeArtifactPluginTest extends PluginTest {
                 accountId = "$accountId"
                 region = "$region"
                 repo = "$repo"
-                mavenContent.set() {
+                content.set() {
                     includeGroup("foo.other") 
                 }
             }
             ${settingsFile.text}
         """)
-        def buildKt = file('build.gradle.kts')
-        buildFile.renameTo(buildKt)
-        buildFile = buildKt
         buildFile << """
             plugins {
                 id("foo.bar").version("42")

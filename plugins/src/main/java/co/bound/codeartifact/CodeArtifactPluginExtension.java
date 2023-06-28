@@ -13,5 +13,5 @@ public abstract class CodeArtifactPluginExtension {
 
     public abstract Property<String> getRepo();
 
-    public abstract Property<SerializableAction<MavenRepositoryContentDescriptor>> getMavenContent();
+    public abstract Property<SerializableAction<MavenRepositoryContentDescriptor>> getContent();
 }

@@ -105,4 +105,13 @@ abstract class PluginTest extends Specification {
         println(result.output)
         return result
     }
+
+    void useKotlinBuildScript() {
+        def settingsKt = file('settings.gradle.kts')
+        settingsFile.renameTo(settingsKt)
+        settingsFile = settingsKt
+        def buildKt = file('build.gradle.kts')
+        buildFile.renameTo(buildKt)
+        buildFile = buildKt
+    }
 }

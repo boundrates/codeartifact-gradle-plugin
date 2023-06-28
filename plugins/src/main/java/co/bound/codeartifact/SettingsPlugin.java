@@ -29,7 +29,7 @@ public class SettingsPlugin implements Plugin<Settings> {
                     params.getAccountId().set(codeartifact.getAccountId());
                     params.getRegion().set(codeartifact.getRegion());
                     params.getRepo().set(codeartifact.getRepo());
-                    params.getMavenContent().set(codeartifact.getMavenContent());
+                    params.getMavenContent().set(codeartifact.getContent());
                     params.getGradleUserHome().set(settings.getStartParameter().getGradleUserHomeDir());
                     params.getOffline().set(settings.getStartParameter().isOffline());
                 }));
