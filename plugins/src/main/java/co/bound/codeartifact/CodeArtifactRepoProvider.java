@@ -18,7 +18,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Properties;
 
 public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtifactRepoProvider.Params> {
@@ -42,8 +41,9 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
                 }
             }
         });
-        Optional.ofNullable(params.getMavenContent().getOrNull())
-                .ifPresent(spec::mavenContent);
+        if (params.getMavenContent().isPresent()) {
+            spec.mavenContent(params.getMavenContent().get());
+        }
     }
 
     private GetAuthorizationTokenResponse token = null;

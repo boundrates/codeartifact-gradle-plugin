@@ -173,7 +173,7 @@ class CodeArtifactPluginTest extends PluginTest {
         givenCodeArtifactPluginIsConfigured()
         wiremock.stubFor(head(anyUrl()).willReturn(ok()))
         wiremock.stubFor(get(urlMatching(".*/42-SNAPSHOT/maven-metadata.xml"))
-                .willReturn(okXml("""\
+                .willReturn(okXml("""
             <metadata>
               <groupId>foo</groupId>
               <artifactId>bar</artifactId>
@@ -182,15 +182,15 @@ class CodeArtifactPluginTest extends PluginTest {
                   <version>42-SNAPSHOT</version>
                 </versions>
               </versioning>
-            </metadata>""".stripIndent())))
+            </metadata>""")))
         wiremock.stubFor(get(urlMatching(".*/bar-42-SNAPSHOT.pom"))
-                .willReturn(okXml("""\
+                .willReturn(okXml("""
             <project>
               <modelVersion>4.0.0</modelVersion>
               <groupId>foo</groupId>
               <artifactId>bar</artifactId>
               <version>42-SNAPSHOT</version>
-            </project>""".stripIndent())))
+            </project>""")))
         wiremock.stubFor(get(urlMatching(".*/bar-42-SNAPSHOT.pom.sha1")).willReturn(ok("1")))
         wiremock.stubFor(get(urlMatching(".*/bar-42-SNAPSHOT.jar"))
         // minimal empty zip file
@@ -205,9 +205,10 @@ class CodeArtifactPluginTest extends PluginTest {
             }
         """
         file("src/main/java/bar").mkdirs()
-        file("src/main/java/bar/Foo.java") << """\
+        file("src/main/java/bar/Foo.java") << """
             package bar;
-            class Foo {}""".stripIndent()
+            class Foo {}
+        """
 
         when:
         runTask(gradleVersion, "build", "-i")
