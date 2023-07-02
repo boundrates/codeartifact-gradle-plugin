@@ -65,7 +65,7 @@ abstract class PluginTest extends Specification {
     void givenCodeArtifactWillReturnAuthToken() {
         wiremock.stubFor(
                 WireMock.post(WireMock.urlMatching("/v1/authorization-token.*"))
-                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+30}}""", 200))
+                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+60}}""", 200))
         )
     }
 
