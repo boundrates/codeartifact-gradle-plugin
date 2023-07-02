@@ -17,7 +17,6 @@ tasks.named("publish") {
 tasks.named("test", Test) {
     useJUnitPlatform()
     testLogging.exceptionFormat = 'full'
-    testLogging.events("started", "skipped", "failed")
     def tmpDir = file("$buildDir/tmp/test/work")
     tmpDir.mkdirs()
     systemProperty 'java.io.tmpdir', tmpDir
@@ -28,7 +27,7 @@ tasks.withType(Javadoc).configureEach {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.20.56"))
+    implementation(platform("software.amazon.awssdk:bom:2.20.97"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
 

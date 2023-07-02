@@ -37,7 +37,7 @@ class CodeArtifactPluginTest extends PluginTest {
         ]
     }
 
-    def "searches for plugins in configured CodeArtifact repository"() {
+    def "searches for plugins in configured CodeArtifact repository - Groovy DSL"() {
         given:
         givenCodeArtifactWillReturnAuthToken()
         givenCodeArtifactPluginIsConfigured()
@@ -61,7 +61,7 @@ class CodeArtifactPluginTest extends PluginTest {
         gradleVersion << gradleVersions()
     }
 
-    def "searches for plugins in configured CodeArtifact repository for kotlin"() {
+    def "searches for plugins in configured CodeArtifact repository for - Kotlin DSL"() {
         given:
         givenCodeArtifactWillReturnAuthToken()
         useKotlinBuildScript()
