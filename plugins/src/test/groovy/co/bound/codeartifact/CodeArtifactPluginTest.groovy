@@ -97,12 +97,25 @@ class CodeArtifactPluginTest extends PluginTest {
         gradleVersion << gradleVersions()
     }
 
-    def "can configure repository filters"() {
+    def "can configure repository filters - Kotlin DSL"() {
         given:
         givenCodeArtifactWillReturnAuthToken()
         file("gradle.properties") << "systemProp.org.gradle.unsafe.kotlin.assignment=true"
         useKotlinBuildScript()
         settingsFile.setText("""
+            pluginManagement {
+                repositories {
+                    maven {
+                        name = "codeartifact"
+                        // Kotlin's version requires some URL to be specified
+                        // Whatever we specify here will be overriden and correctly configured by the codeartifact plugin
+                        url = uri("https://www.foo.bar") 
+                        content {
+                            includeGroup("foo.other") 
+                        }
+                    }
+                }
+            }
             plugins {
                 id("co.bound.codeartifact")
             }
@@ -111,9 +124,48 @@ class CodeArtifactPluginTest extends PluginTest {
                 accountId = "$accountId"
                 region = "$region"
                 repo = "$repo"
-                content.set() {
-                    includeGroup("foo.other") 
+            }
+            ${settingsFile.text}
+        """)
+        buildFile << """
+            plugins {
+                id("foo.bar").version("42")
+            }
+        """
+
+        when:
+        def result = runTaskWithFailure(GradleVersion.current().getVersion(), "tasks", "-i")
+
+        then:
+        result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
+        result.output.contains("Searched in the following repositories:")
+        result.output.contains("codeartifact(${wiremock.baseUrl()}/${domain}-${accountId}.d.codeartifact.${region}.amazonaws.com/maven/$repo/)")
+        wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+        wiremock.verify(0, newRequestPattern(GET, anyUrl()))
+    }
+
+    def "can configure repository filters - Groovy DSL"() {
+        given:
+        givenCodeArtifactWillReturnAuthToken()
+        settingsFile.setText("""
+            pluginManagement {
+                repositories {
+                    maven {
+                        name("codeartifact")
+                        content {
+                            includeGroup("foo.other") 
+                        }
+                    }
                 }
+            }
+            plugins {
+                id("co.bound.codeartifact")
+            }
+            codeartifact {
+                domain = "$domain"
+                accountId = "$accountId"
+                region = "$region"
+                repo = "$repo"
             }
             ${settingsFile.text}
         """)

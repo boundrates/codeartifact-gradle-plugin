@@ -1,9 +1,8 @@
 package co.bound.codeartifact;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.gradle.api.Action;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
-import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
@@ -21,15 +20,22 @@ import java.time.Instant;
 import java.util.Properties;
 
 public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtifactRepoProvider.Params> {
+    private static final String CODEARTIFACT_REPOSITORY_NAME = "codeartifact";
 
-    public void configureRepo(MavenArtifactRepository spec) {
+    public void configureRepo(RepositoryHandler repositories) {
+        if (repositories.findByName(CODEARTIFACT_REPOSITORY_NAME) == null) {
+            repositories.maven(spec -> spec.setName(CODEARTIFACT_REPOSITORY_NAME));
+        }
+        repositories.named(CODEARTIFACT_REPOSITORY_NAME, spec -> configureRepo((MavenArtifactRepository) spec));
+    }
+
+    private void configureRepo(MavenArtifactRepository spec) {
         Params params = getParameters();
         String domain = getRequiredProperty(params.getDomain());
         String accountId = getRequiredProperty(params.getAccountId());
         String region = getRequiredProperty(params.getRegion());
         String repo = getRequiredProperty(params.getRepo());
 
-        spec.setName("codeartifact");
         configureCodeArtifactUrl(spec, domain, accountId, region, repo);
         spec.credentials(pwd -> {
             pwd.setUsername("aws");
@@ -41,9 +47,6 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
                 }
             }
         });
-        if (params.getMavenContent().isPresent()) {
-            spec.mavenContent(params.getMavenContent().get());
-        }
     }
 
     private GetAuthorizationTokenResponse token = null;
@@ -144,7 +147,5 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
         Property<File> getGradleUserHome();
 
         Property<Boolean> getOffline();
-
-        Property<Action<MavenRepositoryContentDescriptor>> getMavenContent();
     }
 }
