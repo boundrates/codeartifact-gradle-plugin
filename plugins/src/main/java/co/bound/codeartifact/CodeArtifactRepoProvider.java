@@ -19,14 +19,15 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Properties;
 
+import static co.bound.codeartifact.CodeArtifactPluginExtension.REPOSITORY_NAME;
+
 public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtifactRepoProvider.Params> {
-    private static final String CODEARTIFACT_REPOSITORY_NAME = "codeartifact";
 
     public void configureRepo(RepositoryHandler repositories) {
-        if (repositories.findByName(CODEARTIFACT_REPOSITORY_NAME) == null) {
-            repositories.maven(spec -> spec.setName(CODEARTIFACT_REPOSITORY_NAME));
+        if (repositories.findByName(REPOSITORY_NAME) == null) {
+            repositories.maven(spec -> spec.setName(REPOSITORY_NAME));
         }
-        repositories.named(CODEARTIFACT_REPOSITORY_NAME, spec -> configureRepo((MavenArtifactRepository) spec));
+        repositories.named(REPOSITORY_NAME, spec -> configureRepo((MavenArtifactRepository) spec));
     }
 
     private void configureRepo(MavenArtifactRepository spec) {
