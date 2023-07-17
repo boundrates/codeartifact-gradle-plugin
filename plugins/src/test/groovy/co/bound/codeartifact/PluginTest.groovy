@@ -65,7 +65,7 @@ abstract class PluginTest extends Specification {
     void givenCodeArtifactWillReturnAuthToken() {
         wiremock.stubFor(
                 WireMock.post(WireMock.urlMatching("/v1/authorization-token.*"))
-                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+30}}""", 200))
+                            .willReturn(WireMock.jsonResponse("""{"authorizationToken":"foobar","expiration":${System.currentTimeSeconds()+60}}""", 200))
         )
     }
 
@@ -88,9 +88,10 @@ abstract class PluginTest extends Specification {
         return ["7.6.1", "8.0.2", GradleVersion.current().getVersion()]
     }
 
-    BuildResult runTask(String task) {
+    BuildResult runTask(Object gradleVersion, String... tasks) {
         def result = gradleRunner
-                .withArguments(task, '--stacktrace')
+                .withGradleVersion(gradleVersion as String)
+                .withArguments((tasks + ['--stacktrace']) as List<String>)
                 .build()
         println(result.output)
         return result
@@ -103,5 +104,14 @@ abstract class PluginTest extends Specification {
                 .buildAndFail()
         println(result.output)
         return result
+    }
+
+    void useKotlinBuildScript() {
+        def settingsKt = file('settings.gradle.kts')
+        settingsFile.renameTo(settingsKt)
+        settingsFile = settingsKt
+        def buildKt = file('build.gradle.kts')
+        buildFile.renameTo(buildKt)
+        buildFile = buildKt
     }
 }

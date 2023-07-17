@@ -1,6 +1,7 @@
 package co.bound.codeartifact;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
@@ -18,16 +19,24 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Properties;
 
+import static co.bound.codeartifact.CodeArtifactPluginExtension.REPOSITORY_NAME;
+
 public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtifactRepoProvider.Params> {
 
-    public void configureRepo(MavenArtifactRepository spec) {
+    public void configureRepo(RepositoryHandler repositories) {
+        if (repositories.findByName(REPOSITORY_NAME) == null) {
+            repositories.maven(spec -> spec.setName(REPOSITORY_NAME));
+        }
+        repositories.named(REPOSITORY_NAME, spec -> configureRepo((MavenArtifactRepository) spec));
+    }
+
+    private void configureRepo(MavenArtifactRepository spec) {
         Params params = getParameters();
         String domain = getRequiredProperty(params.getDomain());
         String accountId = getRequiredProperty(params.getAccountId());
         String region = getRequiredProperty(params.getRegion());
         String repo = getRequiredProperty(params.getRepo());
 
-        spec.setName("codeartifact");
         configureCodeArtifactUrl(spec, domain, accountId, region, repo);
         spec.credentials(pwd -> {
             pwd.setUsername("aws");

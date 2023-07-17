@@ -29,7 +29,7 @@ public class PublishPlugin implements Plugin<Project> {
                         "Please apply the co.bound.codeartifact plugin in the settings file first and configure the codeartifact extension");
             }
             CodeArtifactRepoProvider provider = codeArtifactRepoProviderService.getService().get();
-            handler.maven(provider::configureRepo);
+            provider.configureRepo(handler);
         });
     }
 
