@@ -28,7 +28,7 @@ A settings plugin that configures AWS CodeArtifact repository.
 Usage (in `settings.gradle`):
 ```groovy
 plugins {
-    id("co.bound.codeartifact").version("1.4.0")
+    id("co.bound.codeartifact").version("1.5.0")
 }
 codeartifact {
     domain = "repo-domain"
@@ -40,7 +40,7 @@ codeartifact {
 or `settings.gradle.kts`
 ```kotlin
 plugins {
-    id("co.bound.codeartifact").version("1.4.0")
+    id("co.bound.codeartifact").version("1.5.0")
 }
 codeartifact {
     domain.set("repo-domain")
