@@ -2,13 +2,13 @@ plugins {
     id("java-gradle-plugin")
     id("groovy")
     id("maven-publish")
-    id("com.gradle.plugin-publish").version("1.2.0")
+    id("com.gradle.plugin-publish").version("1.2.1")
     // should be same version as org.gradle.kotlin.dsl.support.KotlinDslPluginsKt.expectedKotlinDslPluginsVersion
     id("org.gradle.kotlin.kotlin-dsl").version("4.0.7")
 }
 
 group = "co.bound"
-version = "1.4.1"
+version = "1.5.0"
 
 tasks.named("publish") {
     dependsOn("check")
@@ -27,13 +27,13 @@ tasks.withType(Javadoc).configureEach {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.20.97"))
+    implementation(platform("software.amazon.awssdk:bom:2.23.8"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
 
     testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-3.0"))
     testImplementation("org.spockframework:spock-core")
-    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.3.1")
 }
 
 gradlePlugin {
