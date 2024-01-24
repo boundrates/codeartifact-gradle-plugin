@@ -31,7 +31,7 @@ dependencies {
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
 
-    testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-3.0"))
+    testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-4.0"))
     testImplementation("org.spockframework:spock-core")
     testImplementation("org.wiremock:wiremock-standalone:3.3.1")
 }
