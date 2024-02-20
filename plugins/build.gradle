@@ -27,7 +27,7 @@ tasks.withType(Javadoc).configureEach {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.23.8"))
+    implementation(platform("software.amazon.awssdk:bom:2.24.6"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
 
