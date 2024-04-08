@@ -30,6 +30,7 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:2.23.8"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
+    implementation("software.amazon.awssdk:ssoidc")
 
     testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-3.0"))
     testImplementation("org.spockframework:spock-core")
