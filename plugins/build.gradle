@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "co.bound"
-version = "1.5.0"
+version = "1.5.1"
 
 tasks.named("publish") {
     dependsOn("check")
@@ -30,6 +30,7 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:2.23.8"))
     implementation("software.amazon.awssdk:codeartifact")
     implementation("software.amazon.awssdk:sso")
+    implementation("software.amazon.awssdk:ssooidc")
 
     testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-3.0"))
     testImplementation("org.spockframework:spock-core")
