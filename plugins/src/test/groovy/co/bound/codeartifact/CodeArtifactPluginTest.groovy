@@ -1,12 +1,16 @@
 package co.bound.codeartifact
 
+import com.github.tomakehurst.wiremock.client.BasicCredentials
 import org.gradle.util.GradleVersion
 
+import static com.github.tomakehurst.wiremock.client.WireMock.any
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import static com.github.tomakehurst.wiremock.client.WireMock.get
 import static com.github.tomakehurst.wiremock.client.WireMock.head
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound
 import static com.github.tomakehurst.wiremock.client.WireMock.ok
 import static com.github.tomakehurst.wiremock.client.WireMock.okXml
+import static com.github.tomakehurst.wiremock.client.WireMock.unauthorized
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import static com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import static com.github.tomakehurst.wiremock.http.RequestMethod.POST
@@ -95,6 +99,54 @@ class CodeArtifactPluginTest extends PluginTest {
 
         where:
         gradleVersion << gradleVersions()
+    }
+
+    def "uses the token from CODEARTIFACT_AUTH_TOKEN instead of asking AWS for one"() {
+        given:
+        givenEnvironmentVariable("CODEARTIFACT_AUTH_TOKEN", "token-from-environment")
+        givenCodeArtifactRequiresBasicAuth("token-from-environment")
+        givenCodeArtifactPluginIsConfigured()
+        buildFile << """
+            plugins {
+                id("foo.bar").version("42")
+            }
+        """
+
+        when:
+        def result = runTaskWithFailure(GradleVersion.current().getVersion(), "tasks")
+
+        then:
+        result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
+        wiremock.verify(0, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+        wiremock.verify(1, newRequestPattern(GET, anyUrl())
+                .withBasicAuth(new BasicCredentials("aws", "token-from-environment")))
+    }
+
+    def "asks AWS for a token when CODEARTIFACT_AUTH_TOKEN is empty"() {
+        given:
+        givenEnvironmentVariable("CODEARTIFACT_AUTH_TOKEN", "")
+        givenCodeArtifactWillReturnAuthToken()
+        givenCodeArtifactPluginIsConfigured()
+        buildFile << """
+            plugins {
+                id("foo.bar").version("42")
+            }
+        """
+
+        when:
+        def result = runTaskWithFailure(GradleVersion.current().getVersion(), "tasks")
+
+        then:
+        result.output.contains("Plugin [id: 'foo.bar', version: '42'] was not found in any of the following sources:")
+        wiremock.verify(1, newRequestPattern(POST, urlMatching("/v1/authorization-token.*")))
+    }
+
+    private void givenCodeArtifactRequiresBasicAuth(String token) {
+        wiremock.stubFor(any(anyUrl()).atPriority(10)
+                .willReturn(unauthorized().withHeader("WWW-Authenticate", "Basic realm=\"codeartifact\"")))
+        wiremock.stubFor(any(anyUrl()).atPriority(1)
+                .withBasicAuth("aws", token)
+                .willReturn(notFound()))
     }
 
     def "can configure repository filters - Kotlin DSL"() {
