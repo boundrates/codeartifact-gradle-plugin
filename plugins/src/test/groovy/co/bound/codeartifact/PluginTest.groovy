@@ -23,6 +23,7 @@ abstract class PluginTest extends Specification {
     File buildFile
 
     private GradleRunner gradleRunner
+    private Map<String, String> environment
 
     final WireMockServer wiremock = new WireMockServer(options().dynamicPort())
 
@@ -48,11 +49,12 @@ abstract class PluginTest extends Specification {
                 .withProjectDir(testProjectDir)
                 .withTestKitDir(gradleUserHome)
                 .withPluginClasspath()
-                .withEnvironment(Map.of(
-                        "CODEARTIFACT_URL_OVERRIDE", wiremock.baseUrl(),
-                        "AWS_ACCESS_KEY_ID", UUID.randomUUID().toString(),
-                        "AWS_SECRET_ACCESS_KEY", UUID.randomUUID().toString()
-                ))
+        environment = new HashMap<>(Map.of(
+                "CODEARTIFACT_URL_OVERRIDE", wiremock.baseUrl(),
+                "AWS_ACCESS_KEY_ID", UUID.randomUUID().toString(),
+                "AWS_SECRET_ACCESS_KEY", UUID.randomUUID().toString()
+        ))
+        gradleRunner.withEnvironment(environment)
 
         assert new File(gradleUserHome, "caches/codeartifact").deleteDir()
     }
@@ -60,6 +62,11 @@ abstract class PluginTest extends Specification {
     def cleanup() {
         println(wiremock.findAllUnmatchedRequests())
         wiremock.stop()
+    }
+
+    void givenEnvironmentVariable(String name, String value) {
+        environment.put(name, value)
+        gradleRunner.withEnvironment(environment)
     }
 
     void givenCodeArtifactWillReturnAuthToken() {

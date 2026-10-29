@@ -50,9 +50,16 @@ public abstract class CodeArtifactRepoProvider implements BuildService<CodeArtif
         });
     }
 
+    private static final String AUTH_TOKEN_ENV_VAR = "CODEARTIFACT_AUTH_TOKEN";
+
     private GetAuthorizationTokenResponse token = null;
 
     public String getToken(String domain, String accountId, String region, Path gradleUserHome) throws IOException {
+        String providedToken = System.getenv(AUTH_TOKEN_ENV_VAR);
+        if (providedToken != null && !providedToken.isBlank()) {
+            return providedToken;
+        }
+
         if (isValidToken(token)) {
             return token.authorizationToken();
         }

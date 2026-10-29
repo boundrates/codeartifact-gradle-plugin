@@ -55,6 +55,12 @@ well as a source for project dependencies.
 
 AWS credentials from the `default` (configurable with environment variable `AWS_PROFILE`) profile will be used for authenticating with and obtaining the token from AWS CodeArtifact.
 
+If the environment variable `CODEARTIFACT_AUTH_TOKEN` is set and not blank, the plugin uses its value as the
+CodeArtifact token. It does not call AWS and it does not cache the token. Use this when the build runs where
+AWS credentials are not available but another tool already provides a token. The plugin does not check that the
+token belongs to the configured domain or account. Unset the variable if your pipeline exports a token for a
+different CodeArtifact domain.
+
 ## co.bound.codeartifact-publish
 
 A project plugin that configures AWS CodeArtifact repository for publishing artifacts to.
