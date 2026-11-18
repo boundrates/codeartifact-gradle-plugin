@@ -17,6 +17,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Build
-        uses: burrunan/gradle-cache-action@3bf23b8dd95e7d2bacf2470132454fe893a178a1 # v1
+        uses: burrunan/gradle-cache-action@404534c34a2faa40430357a3183522a845b04f3b # v3.0.3
         with:
           arguments: build
